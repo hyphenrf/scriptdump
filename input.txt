@@ -1,0 +1,42 @@
+﻿[1]  B.  M.  William,  “Modeling  and  forecasting  vehicular  traffic  flow  as  a
+seasonal stochastic time series process,” Ph.D. dissertation, Dept. Civil
+Eng., Univ. Virginia, Charlottesville, VA, 1999.
+[2]  C. K. Moorthy and B. G. Ratcliffe, “Short term traffic forecasting using
+time series methods,”
+Transp. Plan. Technol.
+, vol. 12, no. 1, pp. 45–56,
+1988.
+[3]  S.   Lee   and   D.   B.   Fambro,   “Application   of   subsets   autoregressive
+integrated moving average model for short-term freeway traffic volume
+forecasting,”
+Transp. Res. Rec.
+, no. 1678, pp. 179–188, 1999.
+[4]  I. Okutani and Y. J. Stephanedes, “Dynamic prediction of traffic volume
+through Kalman filter theory,”
+Transp. Res., Part B: Methodol.
+,vol.18B,
+no. 1, pp. 1–11, Feb. 1984.
+[5]  J. Hall and P. Mars, “The limitations of artificial neural networks for traffic
+prediction,” in
+Proc. 3rd IEEE Symp. Computers and Communications
+,
+Athens, Greece, 1998, pp. 8–12.
+[6]  G. A. Davis and N. L. Nihan, “Non-parametric regression and short-term
+freeway traffic forecasting,”
+J. Transp. Eng.
+, vol. 177, no. 2, pp. 178–188,
+1991.
+[7]  R. Chrobok, J. Wahle, and M. Schreckenberg, “Traffic forecast using sim-
+ulations of large scale networks,” in
+Proc. 4th IEEE Int. Conf. Intelligent
+Transportation Systems
+, Oakland, CA, 2001, pp. 434–439.
+[8]  G. A. Davis, “Adaptive forecasting of freeway traffic congestion,”
+Transp.
+Res. Rec.
+, no. 1287, pp. 29–33, 1990.
+[9]  B.  L.  Smith  and  M.  Demetsky,  “Traffic  flow  forecasting:  Comparison
+of modeling approaches,”
+J. Transp. Eng.
+, vol. 123, no. 4, pp. 261–266,
+1997
