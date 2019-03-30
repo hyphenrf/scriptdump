@@ -1,0 +1,45 @@
+Python switch-casing
+
+The Pythonic solution is to make use of Python’s powerful dictionaries.
+Also known as associative arrays in some languages, Python’s dictionaries allow a simple one-to-one matching of a key and a value. 
+When used as part of a switch case statement, the keys are what would normally trigger the case blocks. The interesting part is that the values in the dictionaries refer to functions that contain the code that would normally be inside the case blocks. Here’s the above code rewritten as a dictionary and functions:
+
+1  | options = {0 : zero,
+2  |                 1 : sqr,
+3  |                 4 : sqr,
+4  |                 9 : sqr,
+5  |                 2 : even,
+6  |                 3 : prime,
+7  |                 5 : prime,
+8  |                 7 : prime,
+9  | }
+10 |  
+11 | def zero():
+12 |     print "You typed zero.\n"
+13 |  
+14 | def sqr():
+15 |     print "n is a perfect square\n"
+16 |  
+17 | def even():
+18 |     print "n is an even number\n"
+19 |  
+20 | def prime():
+21 |     print "n is a prime number\n"
+
+
+Now that you have the switch case setup, you can actually use it by simply doing a dictionary lookup:
+
+1  | options[num]()
+
+Thanks to the fact that Python functions are first class values, you can use the functions as the values of the dictionary and then call them via dictionary lookup.
+
+The advantage of this method is that it is generally cleaner than a long line of if-elses and someone reading your code can simply ignore the functions they are not interested in. Performance-wise, the Python dictionary lookup will almost certainly be more efficient than any solution you can rig yourself (with perhaps the exception of custom C code, but if you can do that, why are you reading this?). 
+However, except a penalty associated with calling and coming back from a function. In fact, it’s the function call that is both the strength and the weakness of this method. While it lets you cleanly segment your code, you also have a bunch of functions lying around. This isn’t a problem if you were going to use functions anyways, but they can be a mess if you have a lot of tiny ones lying around. 
+
+! If your functions sufficiently small, consider inlining them in the dictionary as lambda expressions.
+
+As a final note, 
+The above example doesn’t provide a default case in case nothing matches. You can make up for this by having the actual lookup be inside an if-else block, with the condition checking for the presence of the key in the dictionary (using the ‘<keyname> in <dictionary>’ idiom).
+But a more Pythonic way is to wrap it in a try/except block. If the option isn’t presence, a KeyError Exception will be raised which can then be caught and the default code executed.
+
+Be sure to check the [Wikipedia entry](http://en.wikipedia.org/wiki/Switch_statement) and this [blog post](http://stevemorin.blogspot.com/2005/11/python-switch-case-statement.html) for more information.

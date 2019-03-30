@@ -1,0 +1,160 @@
+
+
+# libs:
+    # you can find all the functions in a module by importing it and using dir() on it
+    # example:
+    >>> import math
+    >>> dir(math)
+
+    # or using the help function in shell:
+    >>> help(math)
+
+    # or using inspect module to see the path of libs that are not built in and read them
+    >>> import inspect
+    >>> import pandas
+    >>> inspect.getmodule(pandas).__file__
+#
+
+
+# Math:
+    import math
+    math.e      # Euler’s Number e, approximately equal to 2.71828
+    math.pi 	# Pi Value, approximately equal to 3.14
+    math.inf 	# Positive Infinity. You can use -Math.INF to return the Negative Infinity.
+    # --------------------------------------------------------------------
+    from math import *
+    ceil(4.5)      # 5
+    floor(4.5)     # 4
+    round(4.56733,[n demicals])
+    abs()
+    factorial(x)   # x!
+    exp(x)         # e^n =x , n=??
+    log(x, base)
+    inverse trig = atrig()
+    hyp = trigh()
+    degrees()/radians()
+#
+
+# Strings:
+    ### in string comparison we compare pointers' ascii code. A pointer is the first character in the string. If two pointers are compared and are equal, the second character then is considered a pointer and compared, and so on. ###
+    Indexing: s[start:end:step]
+    \n is line break
+    \t is tab
+    '''multi
+    line
+    string'''
+    {:d} = int (f = float and s = string)
+    eval('math expression (or any code really)')
+    exec('math expression (or any code really)') # I know there's a difference between them, 
+    # I just don't know what it is. But I've managed to use each one in the right place nearly all the time
+    # so I guess I get the idea at least subconsciously.
+    ord('x') / chr(n)
+    s.upper()                    # HELLO WORLD
+    s.lower()                    # hello world
+    s.title()                    # Hello World
+    s.capitalize()               # Hello world
+    s.swapcase()                 # every cap becomes small and the other way around
+    s.replace('Hello','Goodbye') # Goodbye World
+    s.count('x')                 # number of x's in the string
+    s.find/index('word',startindexnumber,endindexnumber) # index of first letter in first instance of word, find returns -1 if not found while index returns an error
+    s.rfind/rindex(same)         # same but starts from the end of the string (start and end indexes are l to r)
+    s.split('x')                 # creates list of substrings minus the split letter
+    'x'.join(s)                  # puts x between every two characters in s, or joins a splitted list together with x between every two items
+    # PROTIP: split can assign to multiple vars instead of creating a list of strings
+    # ex:
+    a, b, c = '1,2,3'.split(',')
+    # >>> a==1 and b==2 and c==3
+    # True
+
+    # probably won't use:
+
+    s.startswith/endswith('x')   # tests if string starts/ends with x, returns bool
+    s.strip('x')                 # removes x from either or both sides of the string - x has to exist in the string's end/beginning for the function to work. Defaults on whitespaces and linebreak.
+    s.l/rstrip                   # strip from left/right only
+    word.isalnum()               #check if all char are alpha-numeric only
+    word.isalpha()               #check if all char are alphabetic only
+    word.isdigit()               #test if string contains digits
+    word.istitle()               #test if string contains title words
+    word.isupper()               #test if string contains upper case
+    word.islower()               #test if string contains lower case
+    word.isspace()               #test if string contains spaces
+#
+
+# Lists:
+    ### always check if function returns a value or prints it with print(function). if None, it prints ###
+    min/max(L)              # finds min/max value in a list
+    sum(L)                  # sums values of list
+    sorted(L)/L.sort()      # sorts from 0-9 a-z
+    L.append(x)             # adds x to the end of the list
+    L.insert(5,x)           # adds x to the 5th index of the list, shifts the rest of the values to the right
+    L.extend(L2)            # appends L2's values into L as single values not a whole list (L2) in one value if using append instead
+    L.remove(x)             # removes first instance of x in L
+    del L[0]                # removes a list item using its index instead of value
+    L.pop()                 # returns last item and removes it from L
+    L.pop(1)                # returns the item with index 1 and removes it from L
+    L.reverse()             # revs
+    L.count(x)              # counts instances of x
+    L.index(x)              # finds the index of first instance of x, L.find() doesn't work.
+    ' x '.join(L)             # puts x between every two items in L, then returns a string representation of the list's items separated by x
+
+
+
+#
+
+# Misc.:
+
+    # Datatypes:
+
+        # // with a float in it DOES NOT return an integer datatype, even if the value itself is mathematically int.
+        # division / ALWAYS returns float datatype. even if the result is mathematically int
+
+        # even if the number in float datatype is mathematically int (ex: 2.0), you still can't multiply a string by it.
+
+        # "True" in operations equals to 1, "False" equals to 0
+        # Empty (strings,lists,etc..), 0, 0.0, None, are equivalent to False by default. Everything else is equivalent to True
+
+        # Concatination: print(a + b) has to be in the same data type
+
+        # you can compare data with diff types
+
+        # sets can't be of lists / dicts
+        # t1 + t2 = (t1[0], t1[1], t2[0], t2[1])
+
+        # dicts and sets can't be concatinated, lists and tuples can
+    #
+
+    # Lists & slicing:
+        L=L.sort() # RETURNS None .. IMPOORTANT!!!!
+
+        # ALIAS: List variables are global EVEN INSIDE FUNCTIONS .. IMPORTANT!!!!
+        # Why? because lists are stored globally and called by alias.
+
+        #Slicing is an OPEN interval
+        #When you slice x[1:4], you're actually slicing it like this x[1:4[, 
+        #which means 4 is NOT included
+
+        x=[1,2,3,4,5,6,7] # or any iterable
+        print(x[4:1])
+        print(x[2:0])
+        print(x[6:4])
+        # when you do this without saying that the step is -1,
+        # python looks for the index [1] AFTER the index [4]
+        # it obviously doesn't find it, so it defaults the second index as the first index
+        # and so it returns an empty iterable
+        # this is MY hypothesis about it
+    #
+
+    # Files and Directories:
+        # to change dir to the current file:
+        chdir(path.dirname(__file__))
+        
+        # path.abspath(./something/../another) returns the path without .. and .
+        # path.realpath(./something/../another) does the same AND resolves path aliases
+        # path.realpath(path.expanduser(~/something)) is the only way to deal with ~ directory.
+
+
+    #
+
+    # REMEMBER: ANYTHING after return will not be executed. return EXITS the function.
+    
+    # break breaks the nearest loop (not if) and nothing beyond it
