@@ -1,0 +1,20 @@
+To test if a file exists you can create a function that does this for you
+testfile(path) -> mode
+def testfile(path): -> str
+    try:
+            with open(path, x):
+                    return 'w'
+    except:
+            return 'a'
+
+then you can do something like
+with open('test', testfile('test')) as a
+bam.
+
+in the open builtin you can specify what a newline char is to ensure
+compatibility with all systems.
+open('file', newline='something') where 'something' is usually just ''
+
+next builtin function can help you iterate through iterators without having to
+deal with the index range. you have to convert your list, str, whatever, to an
+iterator beforehand though.. using iter builtin function.
