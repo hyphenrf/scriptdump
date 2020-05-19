@@ -61,6 +61,8 @@ map(str.upper, ['boi', 'man', 'jojo'])
 # You can even use instance methods the same way
 map([1,2,3,4,5,5].count, (0, 'boy', 5, 1)) # counts the occurrences of tuple 
                                            # items in the number list
+# Methods that take more than one arg can be achieved with either lambdas or
+# opertator.methodcaller
 
 # similar to (filter, reduce) are (groupby, accumulate)
 # they have similar use pattern but return ALL data instead of the final result
@@ -132,3 +134,46 @@ itrr = range(1, 11)
 reduce(add, map(mby2, itrr))
 
 # Ah, much cleaner.
+
+
+
+
+# TIPS:
+
+# 1
+
+# you want to map a function that takes multiple args to a list of tuples or
+# similar data structure, and return a map obj of function returns.
+# fn = lambda a, b: a+b
+# map(fn, [(1,2), (3,4)])
+# but it doesn't work! That's because map expects it to be layed out like this:
+# map(fn, [1,3], [2,4])
+
+# Here's how to do it in both pure py and with itertools:
+
+arglist = [(1,2), (3,4)]
+fn = lambda a, b: a+b
+
+# method 1:
+# curry
+fn2 = lambda args: fn(*args) # or curry
+map(fn2, arglist)
+
+# method 2:
+# functional-ish comprehension
+[fn(*args) for args in arglist]
+
+# method 3:
+# zipping!
+# zipping an iter of iters (aka table) with star notation rotates the table 90d
+# example: l = [(1,2), (1,2), (1,2)] this is a 3rx2c table
+# list(zip(*l)) returns [(1,1,1), (2,2,2)]
+# notice that this is closer to what map wants, except that it's enclosed in
+# a list. map needs it exploded and so we use another star to achieve that:
+map(fn, *zip(*arglist))
+
+# method 4:
+# starmap is optimised to do the heavy lifting for you!
+# starmap does not work like a normal map, it REQUIRES a list of iterables
+from itertools import starmap
+starmap(fn, arglist)
