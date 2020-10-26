@@ -84,7 +84,7 @@ getmoji()
 [ -p ${temp}/emoji.pipe ] || mkfifo ${temp}/emoji.pipe
 
 { cat ${temp}/guilds 2>/dev/null || getguilds; } > ${temp}/id.pipe&
-while read -r id
+while read -r id #< id.pipe
 do
 	guildmoji $id
 	mx=$(jq ".|length" $id/emoji.json)
@@ -92,7 +92,7 @@ do
 	
 	jq -r '.[]|"\(.id):\(.name):\(.animated)"' $id/emoji.json \
 		> ${temp}/emoji.pipe&
-	while IFS=: read -r eid enm anm
+	while IFS=: read -r eid enm anm #< emoji.pipe
 	do getmoji $id $eid "${enm}" $anm
 	done <${temp}/emoji.pipe
 done <${temp}/id.pipe
