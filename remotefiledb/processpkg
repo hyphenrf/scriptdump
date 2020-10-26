@@ -1,0 +1,44 @@
+#!/bin/sh
+# This is a POSIX-compatible shell script. 
+# should be runnable on a much-faster sh implementation like dash.
+
+LC_ALL=C
+package=${1}
+peopkgs=${2}
+
+# packages are listed as such: 
+# p/pname/package-version-release-distrelease-arch.eopkg
+# pname is inconsistent, but it is guaranteed that the first word in package
+# will match at least one pname.
+# get the latest eopkg -- assuming version numbering is only incremental
+# NOTE: package-[0-9]*- matches package-2-name. which might be an actual package
+#       name. So that must be negated too.
+#       hence the more specific package-[0-9.]+[^-]*- pattern.
+#       you'll notice an extra 'i' in the actual pattern. This negates
+#       package-32bit matches too. Allowing the match to be explicit when
+#       ${package} is package-32bit. I could probably write a more clever and
+#       precise regex involving conditionals..
+
+# TODO: sort by release instead of version -- as that is much more consistent
+peopkg=$(grep -Em1 "${package}-[0-9.]+[^i-]*-" "${peopkgs}")
+
+if [ -z "${peopkg}" ]
+then
+	echo "Error: ${package}: doesn't exist in local repos"
+	exit 1
+fi
+pfile=${peopkg##*/}
+pfile=${pfile%.eopkg}.txt
+
+
+# Check if filelist exists, if so skip package
+if [ -f /tmp/lists/"${pfile}" ]
+then
+	echo "Skipping: ${package}: listing already exists..."
+	exit 0
+fi
+
+# Extract Data
+echo "Processing: ${package}"
+echo "${package}" > /tmp/lists/"${pfile}"
+lspisi "${peopkg}" >> /tmp/lists/"${pfile}"
