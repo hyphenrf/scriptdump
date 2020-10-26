@@ -1,34 +1,35 @@
 #!/bin/sh
+distro=Alpine
 
 # Prepping
-cd Alpine
+cd "${distro}"
 #--------
-mkdir -p /tmp/alpine
-chmod -R 1777 /tmp/alpine
-mpoints=""
+mkdir -p /tmp/"${distro}"
+chmod -R 1777 /tmp/"${distro}"
 
-sudo mount -t proc none proc && mpoints="${mpoints}proc "
-sudo mount -t sysfs none sys && mpoints="${mpoints}sys "
-sudo mount -t devtmpfs none dev && mpoints="${mpoints}dev "
-sudo mount -t devpts none dev/pts
-sudo mount -B /tmp/alpine tmp && mpoints="${mpoints}tmp "
+mount -t proc none proc && mpoints="proc ${mpoints}"
+mount -t sysfs none sys && mpoints="sys ${mpoints}"
+mount -t devtmpfs /dev dev && mpoints="dev ${mpoints}"
+mount -t devpts /dev/pts dev/pts && mpoints="dev/pts ${mpoints}"
+mount -t tmpfs /tmp/survey tmp && mpoints="tmp ${mpoints}"
 
 if [ -L /dev/shm ] && [ -d /run/shm ]; then
 	mkdir -p run/shm
-	sudo mount -B /run/shm run/shm
-	sudo mount --make-private run/shm
-    mpoints="${mpoints}run/shm "
+	mount -o bind -o private /run/shm run/shm
+    mpoints="run/shm ${mpoints}"
 fi
 
 # Chroot
-sudo chroot . /bin/sh -ic "su -"
+chroot . /bin/sh -ic "su -"
 
 # Cleanup and logging
 cd ..
 #----
-echo "===========ALPINE	:$(date)============" >>.umount
-for point in $mpoints
-    do sudo umount -R Alpine/$point 2>>.umount
+echo "===========${distro}	:$(date)============" >>.umount
+# echo points: ${mpoints} >>.umount
+for point in ${mpoints}
+do 
+	umount "${distro}/${point}" 2>>.umount
 done
 echo "Umount done." >>.umount
 
