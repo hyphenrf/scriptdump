@@ -43,21 +43,18 @@ end
 module Arrow (M: sig type r end)
 = struct
   type r = M.r
-  type 'x t = T:(r -> 'x) -> 'x t
-  let pure x = T (fun _ -> x)
-  let (<*>) = fun (T( f: r -> ('a -> 'b) ))
-                  (T( g: r -> 'a         )) ->
-    T(fun (x: r) -> f x (g x))
+  type 'x t = (r -> 'x)
+  let pure x = fun _ -> x
+  let (<*>) f g = fun x -> f x (g x)
 end
 
+module TEST(A: Applicative) = A
+
 let palindrome (type a) (xs: a list) =
-  let module AppArrow = Arrow (struct type r = a list end) in
-  (* let module AppArrow: Applicative with type 'x t = 'x AppArrow.t = AppArrow in *)
-  (* look I made it work and the sigs match but can't convince the type checker it implements Applicative. *)
-  let open   AppArrow in
-  let (=) = T (=) in
-  let rev = T List.rev in
-      (=) <*> rev |> fun (T f) -> f xs
+  let module A = Arrow (struct type r = a list end) in
+  let module T = TEST(A) in (* Proof it correctly implements Applicative *)
+  let open A in
+  let go = (=) <*> List.rev in go xs
 
 let () = ()
   ; Printf.printf "%b\n" (palindrome ['m';'o';'m'])
