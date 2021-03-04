@@ -40,21 +40,18 @@ end
    comes second, ocaml's type system wrestling...
 *)
 
-module Arrow (M: sig type r end)
+module Arrow (M: sig type r end): Applicative with type 'x t = M.r -> 'x
 = struct
   type r = M.r
-  type 'x t = (r -> 'x)
+  type 'x t = r -> 'x
   let pure x = fun _ -> x
   let (<*>) f g = fun x -> f x (g x)
 end
 
-module TEST(A: Applicative) = A
 
 let palindrome (type a) (xs: a list) =
-  let module A = Arrow (struct type r = a list end) in
-  let module T = TEST(A) in (* Proof it correctly implements Applicative *)
-  let open A in
-  let go = (=) <*> List.rev in go xs
+  let open Arrow (struct type r = a list end) in
+      ((=) <*> List.rev) xs
 
 let () = ()
   ; Printf.printf "%b\n" (palindrome ['m';'o';'m'])
