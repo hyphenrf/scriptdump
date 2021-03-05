@@ -16,15 +16,15 @@
       Applicative p => p (x -> y) -> p x -> p y
 *)
 
+module type Functor = sig
+  type 'a t
+  val fmap : ('a -> 'b) -> 'a t -> 'b t
+end
+
 module type Applicative = sig
-  type 'x t
+  include Functor
   val pure    : 'a -> 'a t
   val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
-  (*
-  val liftA2  : ('a -> 'b -> 'c) -> 'a t -> 'b t -> 'c t
-  val ( *> )  : 'a t -> 'b t -> 'b t
-  val ( <* )  : 'a t -> 'b t -> 'a t
-  *)
 end
 
 (*
@@ -40,22 +40,60 @@ end
    comes second, ocaml's type system wrestling...
 *)
 
-module Arrow (M: sig type r end): Applicative with type 'x t = M.r -> 'x
+module Arrow (R: sig type r end): Applicative with type 'a t = R.r -> 'a
 = struct
-  type r = M.r
-  type 'x t = r -> 'x
+  type 'a t = R.r -> 'a
+  let fmap f g = fun x -> f (g x)
   let pure x = fun _ -> x
   let (<*>) f g = fun x -> f x (g x)
 end
 
+(*
+   because ((->)r) is a type constructor parametrised with an additional r, we
+   need r from outside and 'a for Applicative.t defined. We use a functor for r.
+   We also need `with type ...` to expose our abstract Applicative type's
+   specification for this instance to the outside world
+*)
 
-let palindrome (type a) (xs: a list) =
+
+(*
+  explicit type a stands for an implicit forall a
+  to my understanding this shouldn't act like higher rank polymorphism. Why does
+  it act like higher rank polymorphism? Beats me.
+  to make this function truly polymorphic over all list types we need to
+  eta-reduce it. Defeating the purpose of <*>. There's another way to keep it
+  pointfree: objects and records.
+*)
+let o = object
+  method palindrome: type a. a list -> bool =
   let open Arrow (struct type r = a list end) in
-      ((=) <*> List.rev) xs
+      (=) <*> List.rev
+end
 
 let () = ()
-  ; Printf.printf "%b\n" (palindrome ['m';'o';'m'])
-  ; Printf.printf "%b\n" (palindrome [1;2;3])
-  ; Printf.printf "%b\n" (palindrome [1])
-  ; Printf.printf "%b\n" (palindrome [])
+  ; Printf.printf "%b\n" (o#palindrome ['m';'o';'m'])
+  ; Printf.printf "%b\n" (o#palindrome [1;2;3])
+  ; Printf.printf "%b\n" (o#palindrome [1])
+  ; Printf.printf "%b\n" (o#palindrome [])
 
+(*
+  Veridict:
+    - typeclasses are equivalent to ML signatures
+    - instances are modules
+    - parametrised instances are parametrised modules aka functors
+    - ocaml doesn't have a type-level prolog like that of haskell, which is why
+      we need to be explicit about our type relationships
+    - ocaml's functions can't afford to be "oblivious" about the modules they
+      handle (as long as the compiler doesn't support modular implicits), so we
+      must explicitly state the correct relationships between types and
+      "typeclases"
+    - implicit typeclass resolution explodes compile times and increases
+      compiler complexity on the flip side
+    - also on the flip side: for each type there can only be one typeclass
+      instance defined. this isn't an issue when you're explicit and limited to
+      a scope instead of having classes pervasively.
+    - ocaml programs tends towards direct-style helper functions on call site
+      instead of too many abstractions and design pattern hiearchies, or even
+      just resolving the extra unnecessary function to its implementation:
+        let palindrome xs = List.rev xs = xs
+*)
