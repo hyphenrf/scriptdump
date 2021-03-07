@@ -40,7 +40,7 @@ end
    comes second, ocaml's type system wrestling...
 *)
 
-module Arrow (R: sig type r end): Applicative with type 'a t = R.r -> 'a
+module AppF (R: sig type r end): Applicative with type 'a t = R.r -> 'a
 = struct
   type 'a t = R.r -> 'a
   let fmap f g = fun x -> f (g x)
@@ -66,7 +66,7 @@ end
 *)
 let o = object
   method palindrome: type a. a list -> bool =
-  let open Arrow (struct type r = a list end) in
+  let open AppF (struct type r = a list end) in
       (=) <*> List.rev
 end
 
