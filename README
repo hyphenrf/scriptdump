@@ -1,0 +1,12 @@
+Scriptdump
+
+check out these dirs:
+ - ocaml/
+ - dlang/
+
+noteworthy files:
+ - render-color.py
+ - bits.py
+ - ansi.lua
+ - rpn.c
+ - rpn.ml

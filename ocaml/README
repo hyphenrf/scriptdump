@@ -1,0 +1,11 @@
+Some OCaml notes
+
+I encourage you to check out:
+ - abjads_variant_types.ml
+ - monad.ml
+ - applicative.ml
+ - monoid.ml
+ - heterolist.ml
+ - prompt.ml (* a rosetta code submission *)
+ - quine.ml
+ - tree.ml (* a tree(1)-like command implementation I wrote originally for my plan9 install *)
