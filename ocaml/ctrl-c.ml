@@ -1,13 +1,7 @@
-exception KeyboardInterrupt
 
-let main argv = let open Sys in
-    set_signal sigint @@
-        Signal_handle (
-            fun _sig ->
-                print_endline "\nWHY ARE YOU INTERRUPTING ME??";
-                raise_notrace KeyboardInterrupt
-        )
-    ; try while true do () done
-    ; with KeyboardInterrupt -> ()
-
-let () = main Sys.argv
+let main = let open Sys in
+  catch_break true; (* The important bit here *)
+  try
+    while true do () done
+  with
+    Break -> print_endline "\nWHY ARE YOU INTERRUPTING ME??"
