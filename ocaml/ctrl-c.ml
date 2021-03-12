@@ -1,3 +1,4 @@
+exception KeyboardInterrupt
 
 let main argv = let open Sys in
     set_signal sigint @@
@@ -6,6 +7,7 @@ let main argv = let open Sys in
                 print_endline "\nWHY ARE YOU INTERRUPTING ME??";
                 raise_notrace KeyboardInterrupt
         )
-    ; while true do () done
+    ; try while true do () done
+    ; with KeyboardInterrupt -> ()
 
 let () = main Sys.argv
