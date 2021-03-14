@@ -1,4 +1,4 @@
-(* ocamlopt -O3 -unbox-closures -unsafe -o bench cps.ml *)
+(* ocamlopt -O3 -unbox-closures -unsafe -ccopt -O3 cps_stub.c -o bench cps.ml *)
 
 (* Normal Ackermann function as per math definition *)
 let rec ack1 m n = match m, n with
@@ -47,7 +47,7 @@ let ack3 m n = ack3' m n id
  * the lost speed.. I think. Also consider this: you can't send a function. You
  * can't save a function. You can't hash a function. But you can a structure!
  * https://archive.is/I3RaL ||
- * https://blog.sigplan.org/2019/12/30/defunctionalization-everybody-does-it-nobody-talks-about-it/ ||
+ * https://blog.sigplan.org/2019/12/30/defunctionalization-everybody-does-it-nobody-talks-about-it/
  * https://stackoverflow.com/a/9323417 (gasche is brilliant)
  *
  * Steps:
@@ -86,9 +86,42 @@ let ack4 m n = ack4' m n ID
 
 
 (* Driver code *)
-let () =
-  let ack = ack4 in
-  let n = if Array.length Sys.argv > 1 then int_of_string Sys.argv.(1) else
-  (print_endline "Argument not provided. Continuing with Ack(4,1)"; 1) in
-  Printf.printf "Ack(4,%d): %d\n" n (ack 4 n)
+external start: unit -> (int[@untagged]) = "" "rdtsc_start" [@@immediate][@@noalloc]
+external stop: unit -> (int[@untagged]) = "" "rdtsc_stop" [@@immediate][@@noalloc]
 
+let time f x =
+  let start = start () in
+    ignore (f x);
+    stop () - start
+
+
+let doTests () =
+  let (>>=) = Fun.flip List.concat_map in
+  begin
+    List.init 14 succ >>= fun n ->
+    [ "stack recursive with match",   ack1 3, n
+    ; "stack recursive with if-else", ack2 3, n
+    ; "continuation passing style",   ack3 3, n
+    ; "cps with defunctionalization", ack4 3, n
+    ; "----------------------------", Fun.id, n ]
+  end
+  |> List.iter (fun (name, test, n) ->
+       if name.[0] = '-' then print_endline name else
+       Printf.printf "%s:\t ack(3,% 3d): %#d cycles\n%!" name n (time test n))
+
+let () = doTests ()
+
+(* Veridict *)
+(*
+ * OCaml's stack-based recursion is unsurprisingly the fastest and easiest on
+ * memory.
+ *
+ * CPS completely removes the danger of stackoverflows and it's fairly
+ * mechanical transformation. The performance loss is in some logarithmic
+ * magnitude though.. Maybe flambda will improve on that.
+ *
+ * OCaml's closure representation is around x2 heavier than boxed type
+ * representation. So defunctionalization yields true improvement to memory
+ * usage and runtime. Roughly cutting each in half.
+ *
+ *)
