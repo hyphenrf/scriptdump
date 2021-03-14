@@ -140,8 +140,12 @@ let () = doTests ()
  * mechanical transformation. The performance loss is in some logarithmic
  * magnitude though.. Maybe flambda will improve on that.
  *
- * OCaml's closure representation is around x2 heavier than boxed type
- * representation. So defunctionalization yields true improvement to memory
- * usage and runtime. Roughly cutting each in half.
+ * OCaml's closure representation is heavier than boxed type representation. So
+ * defunctionalization yields true improvement to memory usage and runtime.
+ * Roughly cutting each in half.
+ *
+ * Funny enough, the iterative imperative (arguably ugliest) solution doesn't
+ * yeild much improvement to running time or memory usage. In fact, it's roughly
+ * equivalent to the defunctionalized version.
  *
  *)
