@@ -82,6 +82,23 @@ and apply x = function
 
 let ack4 m n = ack4' m n ID
 
+(* Iteration:
+ * While CPS is very versatile, the real power of it here in this use-case IMO
+ * is how it makes translation from recursion to iteration also mechanical.
+ *)
+let ack5 m n =
+  let k: int list ref = ref [] in
+  let m = ref m in
+  let n = ref n in
+  begin try
+    while true do
+      while !m > 0 do
+        if !n = 0 then ( decr m; n := 1 )
+                  else ( decr n; k := !m-1::!k )
+      done;
+      incr n; m := List.hd !k; k := List.tl !k
+    done
+  with Failure _ -> () end; !n
 
 
 
@@ -103,6 +120,7 @@ let doTests () =
     ; "stack recursive with if-else", ack2 3, n
     ; "continuation passing style",   ack3 3, n
     ; "cps with defunctionalization", ack4 3, n
+    ; "derived iterative algorithm",  ack5 3, n
     ; "----------------------------", Fun.id, n ]
   end
   |> List.iter (fun (name, test, n) ->
