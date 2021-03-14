@@ -96,9 +96,11 @@ let ack5 m n =
         if !n = 0 then ( decr m; n := 1 )
                   else ( decr n; k := !m-1::!k )
       done;
-      incr n; m := List.hd !k; k := List.tl !k
+      incr n;
+      match !k with [] -> raise Exit
+                  | cont::ks -> m := cont; k := ks
     done
-  with Failure _ -> () end; !n
+  with Exit -> () end; !n
 
 
 
