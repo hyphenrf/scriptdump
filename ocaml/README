@@ -7,6 +7,7 @@ I encourage you to check out:
  - applicative.ml
  - monoid.ml
  - heterolist.ml
+ - variadic.ml
  - prompt.ml (* a rosetta code submission *)
  - quine.ml
  - tree.ml (* a tree(1)-like command implementation I wrote originally for my plan9 install *)
