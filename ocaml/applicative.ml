@@ -40,11 +40,11 @@ end
    comes second, ocaml's type system wrestling...
 *)
 
-module AppF (R: sig type r end): Applicative with type 'a t = R.r -> 'a
+module AppF (R:sig type r end): Applicative with type 'a t = R.r -> 'a
 = struct
   type 'a t = R.r -> 'a
-  let fmap f g = fun x -> f (g x)
-  let pure x = fun _ -> x
+  let fmap f g  = fun x -> f (g x)
+  let pure x    = fun _ -> x
   let (<*>) f g = fun x -> f x (g x)
 end
 
@@ -57,18 +57,22 @@ end
 
 
 (*
-  explicit type a stands for an implicit forall a
-  to my understanding this shouldn't act like higher rank polymorphism. Why does
-  it act like higher rank polymorphism? Beats me.
-  to make this function truly polymorphic over all list types we need to
-  eta-reduce it. Defeating the purpose of <*>. There's another way to keep it
-  pointfree: objects and records.
+  an explicit (type a) is a locally abstract existentially quantified typevar
+  introduced for the functor instantiation.
+  to my understanding, this shouldn't act like higher rank polymorphism. Why
+  does it act like higher rank polymorphism? Beats me. Perhaps this is value
+  restriction kicking in.
+  to give this function universally quantified polymorphism, we need to
+  eta-expand it. Although expansion defeats the purpose of (<*>) combinator.
+  Luckily there's another way to keep it pointfree: objects and records.
 *)
+
 let o = object
   method palindrome: type a. a list -> bool =
-  let open AppF (struct type r = a list end) in
-      (=) <*> List.rev
+     let open AppF (struct type r = a list end) in
+         (=) <*> List.rev
 end
+
 
 let () = ()
   ; Printf.printf "%b\n" (o#palindrome ['m';'o';'m'])
@@ -78,22 +82,24 @@ let () = ()
 
 (*
   Veridict:
-    - typeclasses are equivalent to ML signatures
+    - typeclasses are equivalent to ML signatures (both are an interface)
     - instances are modules
     - parametrised instances are parametrised modules aka functors
-    - ocaml doesn't have a type-level prolog like that of haskell, which is why
+    - ocaml doesn't have a type-level solver like that of haskell, which is why
       we need to be explicit about our type relationships
     - ocaml's functions can't afford to be "oblivious" about the modules they
       handle (as long as the compiler doesn't support modular implicits), so we
       must explicitly state the correct relationships between types and
       "typeclases"
-    - implicit typeclass resolution explodes compile times and increases
-      compiler complexity on the flip side
+    - implicit typeclass resolution may explode compile times and increases
+      compiler complexity on the flip side.. Although a language that has
+      typeclasses but not ML modules may be less complex tbh.
     - also on the flip side: for each type there can only be one typeclass
       instance defined. this isn't an issue when you're explicit and limited to
-      a scope instead of having classes pervasively.
+      a scope instead of having classes pervasively. Modules are more powerful.
     - ocaml programs tends towards direct-style helper functions on call site
       instead of too many abstractions and design pattern hiearchies, or even
-      just resolving the extra unnecessary function to its implementation:
+      just resolving the extra general lifta2 function to its local callsite
+      implementation:
         let palindrome xs = List.rev xs = xs
 *)
