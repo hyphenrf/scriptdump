@@ -82,24 +82,25 @@ let () = ()
 
 (*
   Veridict:
-    - typeclasses are equivalent to ML signatures (both are an interface)
-    - instances are modules
-    - parametrised instances are parametrised modules aka functors
-    - ocaml doesn't have a type-level solver like that of haskell, which is why
-      we need to be explicit about our type relationships
-    - ocaml's functions can't afford to be "oblivious" about the modules they
-      handle (as long as the compiler doesn't support modular implicits), so we
-      must explicitly state the correct relationships between types and
-      "typeclases"
-    - implicit typeclass resolution may explode compile times and increases
-      compiler complexity on the flip side.. Although a language that has
-      typeclasses but not ML modules may be less complex tbh.
-    - also on the flip side: for each type there can only be one typeclass
-      instance defined. this isn't an issue when you're explicit and limited to
-      a scope instead of having classes pervasively. Modules are more powerful.
-    - ocaml programs tends towards direct-style helper functions on call site
+    - ML signatures express typeclasses (both are an interface).
+    - instances are modules.
+    - type-parametrised instances are parametrised modules aka functors.
+    - ocaml doesn't have a class solver like that of haskell, which is why we
+      need to be explicit about type relationships and "typeclass" choices.
+      functions can't afford to be "oblivious" about the modules they belong to
+      (as long as the compiler doesn't support modular implicits).
+    - implicit typeclass resolution may increase compile times and reduce the
+      effectiveness of type inference.
+    - for each type there can only be one typeclass instance defined. this isn't
+      an issue when you're explicit and limited to a scope instead of having
+      classes pervasively. Implicits are worse in that regard as they remove the
+      typeclass restriction and introduce complex resolution rules.
+    - if the choice was between implementing a module language or a typeclass
+      mechanism, modules are more complex and more sophisticated by account of
+      ghc implementors.
+    - ocaml programs tend towards direct-style helper functions on call site
       instead of too many abstractions and design pattern hiearchies, or even
-      just resolving the extra general lifta2 function to its local callsite
+      just resolving the extra general ap/<*> function to its local callsite
       implementation:
         let palindrome xs = List.rev xs = xs
 *)
