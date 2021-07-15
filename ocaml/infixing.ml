@@ -13,5 +13,15 @@ let (%>) = Fun.flip
 
 let sub = Int.sub
 
-let _ = assert (3 <%sub%> 1 = ((Fun.flip sub) 1) 3)
-let _ = assert (3 <%sub%> 1 = 2)
+let _ =
+  (* expected evaluation order: *)
+  assert (3 <%sub%> 1 = ((|>) 3 ((Fun.flip sub) 1)));
+  assert (3 <%sub%> 1 = 2)
+
+(* This doesn't need to be the case though, as one doesn't need to use
+ * `Fun.flip` to get the desired effect: *)
+let ( /* ) = (|>)
+let ( */ ) = (@@)
+
+let _ =
+  assert (3 /*sub*/ 1 = 2)
