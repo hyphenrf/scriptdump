@@ -10,10 +10,8 @@ let rec ack1 m n = match m, n with
  * i wonder if that makes a difference in speed/memory
  * spoiler: it doesn't *)
 let rec ack2 m n =
-  if m = 0 then n + 1
-  else 
-  if n = 0 then ack2 (m-1) 1
-  else
+  if m = 0 then n + 1 else
+  if n = 0 then ack2 (m-1) 1 else
   ack2 (m-1) (ack2 m (n-1))
 
 (* Continuation Passing Style:
@@ -22,7 +20,7 @@ let rec ack2 m n =
  * moving it inside the continuation.
  *
  *  m, n -> ack (m-1) @@ ack m (n-1)
- *                    ^^^^^^^^^^^^^^ 
+ *                    ^^^^^^^^^^^^^^
  *  m, n -> let rhs = ack m (n-1) in
  *            ack (m-1) rhs <- not tailrec because of the above binding, but
  *                             getting closer...
@@ -31,8 +29,6 @@ let rec ack2 m n =
  *
  * This is called CPS. It sacrifices heap and time to save stack
  *)
-let[@inline always] id x = x
-
 let rec ack3' m n ret =
   match m, n with
   | 0, n -> ret (n+1)
@@ -40,7 +36,7 @@ let rec ack3' m n ret =
   | m, n -> (ack3'[@tailcall]) m (n-1)
       (fun cont -> (ack3'[@tailcall]) (m-1) cont ret)
 
-let ack3 m n = ack3' m n id
+let ack3 m n = ack3' m n Fun.id
 
 (* Defunctionalization: an optimization step after CPS that removes the weight
  * of thunks, replacing them with constructors.. Which should retreive some of
@@ -85,18 +81,22 @@ let ack4 m n = ack4' m n ID
 (* Iteration:
  * While CPS is very versatile, the real power of it here in this use-case IMO
  * is how it makes translation from recursion to iteration also mechanical.
+ *
+ * as mentioned above, cont looks like a list, so let's just make it one
  *)
 let ack5 m n =
-  let k: int list ref = ref [] in
+  let k: int list ref = ref [] in (* cont datatype as a list *)
   let m = ref m in
   let n = ref n in
-  begin try
+  begin try (* substituted do-while *)
     while true do
-      while !m > 0 do
-        if !n = 0 then ( decr m; n := 1 )
-                  else ( decr n; k := !m-1::!k )
+      (* run ackermann *)
+      while !m > 0 do (* the recursive cases *)
+        if !n = 0 then ( decr m; n := 1 ) (* ack (m-1) 1 *)
+                  else ( decr n; k := !m-1::!k ) (* ack m (n-1) (Ack(m-1,k)) *)
       done;
-      incr n;
+      incr n; (* base case (m = 0) *)
+      (* pop a continuation from the stack or finish *)
       match !k with [] -> raise Exit
                   | cont::ks -> m := cont; k := ks
     done
@@ -105,8 +105,8 @@ let ack5 m n =
 
 
 (* Driver code *)
-external start: unit -> (int[@untagged]) = "" "rdtsc_start" [@@immediate][@@noalloc]
-external stop: unit -> (int[@untagged]) = "" "rdtsc_stop" [@@immediate][@@noalloc]
+external start: unit -> (int[@untagged]) = "" "rdtsc_start" [@@noalloc]
+external stop: unit -> (int[@untagged]) = "" "rdtsc_stop" [@@noalloc]
 
 let time f x =
   let start = start () in
